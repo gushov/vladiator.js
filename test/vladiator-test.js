@@ -30,7 +30,8 @@ buster.testCase("vladiator", {
 
     var resultRecipe1 = validateRecipe({});
     var resultRecipe2 = validateRecipe({
-      ingredients: ['butter']
+      ingredients: ['butter'],
+      author: 'gus'
     });
     var resultRecipe3 = validateRecipe({
       ingredients: []
@@ -39,9 +40,11 @@ buster.testCase("vladiator", {
     refute(resultChef1.isValid);
     assert.equals(Object.keys(resultChef1.error).length, 1);
     assert.equals(resultChef1.error.name, 'required');
+    assert.equals(Object.keys(resultChef1.$).length, 2);
 
     assert(resultChef2.isValid);
     assert.equals(Object.keys(resultChef2.error).length, 0);
+    assert.equals(Object.keys(resultChef2.$).length, 2);
 
     refute(resultChef3.isValid);
     assert.equals(Object.keys(resultChef3.error).length, 2);
@@ -53,6 +56,8 @@ buster.testCase("vladiator", {
 
     assert(resultRecipe2.isValid);
     assert.equals(Object.keys(resultRecipe2.error).length, 0);
+    assert.equals(Object.keys(resultRecipe2.$).length, 1);
+    refute.defined(resultRecipe2.$.author);
 
     refute(resultRecipe3.isValid);
     assert.equals(Object.keys(resultRecipe3.error).length, 1);
