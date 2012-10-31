@@ -14,6 +14,19 @@ module.exports = function(grunt) {
     lint: {
       files: ['grunt.js', 'lib/**/*.js', 'test/*.js']
     },
+    mdlldr: {
+      lil_: {
+        root: './node_modules/lil_/lib',
+        src: ['lil_.js'],
+        dest: './build/lil_.js'
+      },
+      vladiator: {
+        root: './lib',
+        src: ['vladiator.js'],
+        dest: './build/vladiator.js',
+        overrides : { lil_: 'lil_' }
+      }
+    },
     buster: {
       test: {
         config: 'test/buster.js'
@@ -24,7 +37,12 @@ module.exports = function(grunt) {
     },
     concat: {
       dist: {
-        src: ['<banner:meta.banner>', '<file_strip_banner:lib/<%= pkg.name %>.js>'],
+        src: [
+          '<banner:meta.banner>',
+          '<file_strip_banner:node_modules/lilprovider/lib/lilprovider.js>',
+          '<file_strip_banner:build/lil_.js>',
+          '<file_strip_banner:build/<%= pkg.name %>.js>'
+        ],
         dest: 'dist/<%= pkg.name %>.js'
       }
     },
@@ -60,7 +78,8 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'lint buster concat min');
+  grunt.registerTask('default', 'lint mdlldr concat min buster');
+  grunt.loadNpmTasks('grunt-mdlldr');
   grunt.loadNpmTasks('grunt-buster');
 
 };

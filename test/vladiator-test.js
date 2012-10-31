@@ -4,7 +4,7 @@
 /*global assert,refute */
 
 var buster = typeof buster !== 'undefined' ? buster : require("buster");
-var vlad = require('../lib/vladiator', 'vladiator');
+var vlad = typeof module !== 'undefined' ? require('../lib/vladiator') : require('vladiator');
 
 buster.testCase("vladiator", {
 

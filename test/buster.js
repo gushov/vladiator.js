@@ -13,9 +13,7 @@ config["lilobj browser tests"] = {
   environment: "browser",
   sources: [
     "node_modules/es5-shim/es5-shim.js",
-    "node_modules/lilprovider/dist/lilprovider.js",
-    "node_modules/lil_/dist/lil_.js",
-    "lib/vladiator.js"
+    "dist/vladiator.js"
   ],
   tests: [
     "test/*-test.js"
