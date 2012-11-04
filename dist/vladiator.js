@@ -1,4 +1,4 @@
-/*! vladiator - v0.0.0 - 2012-10-31
+/*! vladiator - v0.0.0 - 2012-11-04
  * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -226,9 +226,7 @@ var validate = function (rules, $) {
 
 };
 
-module.exports = function (rules) {
-  return validate.bind(null, rules);
-};
+module.exports = validate;
 
 
 }, true);

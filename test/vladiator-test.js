@@ -10,30 +10,30 @@ buster.testCase("vladiator", {
 
   "should validate something": function () {
 
-    var validateChef = vlad({
+    var chefRules = {
       name: ['required', 'string', ['length', 2, 5]],
       age: ['number', ['gte', 18]]
-    });
+    };
 
-    var validateRecipe = vlad({
+    var recipeRules = {
       ingredients: ['array', ['length', 1]]
-    });
+    };
 
-    var resultChef1 = validateChef({});
-    var resultChef2 = validateChef({
+    var resultChef1 = vlad(chefRules, {});
+    var resultChef2 = vlad(chefRules, {
       name: 'iver'
     });
-    var resultChef3 = validateChef({
+    var resultChef3 = vlad(chefRules, {
       name: 'i',
       age: 0
     });
 
-    var resultRecipe1 = validateRecipe({});
-    var resultRecipe2 = validateRecipe({
+    var resultRecipe1 = vlad(recipeRules, {});
+    var resultRecipe2 = vlad(recipeRules, {
       ingredients: ['butter'],
       author: 'gus'
     });
-    var resultRecipe3 = validateRecipe({
+    var resultRecipe3 = vlad(recipeRules, {
       ingredients: []
     });
 
