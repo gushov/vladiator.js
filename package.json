@@ -20,7 +20,7 @@
     "lilprovider": ">= 0.0.x"
   },
   "licenses": [{ "type": "MIT" } ],
-  "main": "dist/vladiator.js",
+  "main": "lib/vladiator.js",
   "scripts": {
     "test": "grunt buster"
   }
