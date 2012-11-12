@@ -15,53 +15,47 @@ buster.testCase("vladiator", {
       age: ['number', ['gte', 18]]
     };
 
+    var resultChefName1 = vlad(chefRules.name, undefined);
+    var resultChefAge1 = vlad(chefRules.age, undefined);
+
+    refute(resultChefName1.isValid);
+    assert(resultChefAge1.isValid);
+    assert.equals(resultChefName1.error, 'required');
+    assert.equals(resultChefName1.$, undefined);
+    assert.equals(resultChefAge1.$, undefined);
+
+    var resultChef2 = vlad(chefRules.name, 'iver');
+
+    assert(resultChef2.isValid);
+    assert.equals(resultChef2.error, undefined);
+    assert.equals(resultChef2.$, 'iver');
+
+    var resultChefName3 = vlad(chefRules.name, 'i');
+    var resultChefAge3 = vlad(chefRules.age, 0);
+
+    refute(resultChefName3.isValid);
+    refute(resultChefAge3.isValid);
+
+    assert.equals(resultChefName3.error, 'length');
+    assert.equals(resultChefAge3.error, 'gte');
+
     var recipeRules = {
       ingredients: ['array', ['length', 1]]
     };
 
-    var resultChef1 = vlad(chefRules, {});
-    var resultChef2 = vlad(chefRules, {
-      name: 'iver'
-    });
-    var resultChef3 = vlad(chefRules, {
-      name: 'i',
-      age: 0
-    });
-
-    var resultRecipe1 = vlad(recipeRules, {});
-    var resultRecipe2 = vlad(recipeRules, {
-      ingredients: ['butter'],
-      author: 'gus'
-    });
-    var resultRecipe3 = vlad(recipeRules, {
-      ingredients: []
-    });
-
-    refute(resultChef1.isValid);
-    assert.equals(Object.keys(resultChef1.error).length, 1);
-    assert.equals(resultChef1.error.name, 'required');
-    assert.equals(Object.keys(resultChef1.$).length, 2);
-
-    assert(resultChef2.isValid);
-    assert.equals(Object.keys(resultChef2.error).length, 0);
-    assert.equals(Object.keys(resultChef2.$).length, 2);
-
-    refute(resultChef3.isValid);
-    assert.equals(Object.keys(resultChef3.error).length, 2);
-    assert.equals(resultChef3.error.name, 'length');
-    assert.equals(resultChef3.error.age, 'gte');
+    var resultRecipe1 = vlad(recipeRules.ingredients, undefined);
+    var resultRecipe2 = vlad(recipeRules.ingredients, ['butter']);
+    var resultRecipe3 = vlad(recipeRules.ingredients, []);
 
     assert(resultRecipe1.isValid);
-    assert.equals(Object.keys(resultRecipe1.error).length, 0);
+    assert.equals(resultRecipe1.error, undefined);
 
     assert(resultRecipe2.isValid);
-    assert.equals(Object.keys(resultRecipe2.error).length, 0);
-    assert.equals(Object.keys(resultRecipe2.$).length, 1);
-    refute.defined(resultRecipe2.$.author);
+    assert.equals(resultRecipe2.error, undefined);
+    assert.equals(resultRecipe2.$.length, 1);
 
     refute(resultRecipe3.isValid);
-    assert.equals(Object.keys(resultRecipe3.error).length, 1);
-    assert.equals(resultRecipe3.error.ingredients, 'length');
+    assert.equals(resultRecipe3.error, 'length');
 
   }
 

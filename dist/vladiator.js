@@ -1,4 +1,4 @@
-/*! vladiator - v0.0.0 - 2012-11-04
+/*! vladiator - v0.0.0 - 2012-11-11
  * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -74,6 +74,19 @@ provide('lil_', function (require, module, exports) {
 
 module.exports = {
 
+  typeOf: function (x) {
+
+    var type = typeof x;
+
+    if (type === 'object') {
+      type = Array.isArray(x) ? 'array' : type;
+      type = x === null ? 'null' : type;
+    }
+
+    return type;
+
+  },
+
   each: function (arr, func, ctx) {
 
     if (arr && arr.length) {
@@ -100,13 +113,38 @@ module.exports = {
 
   },
 
-  eachIn: function (obj, func) {
+  eachIn: function (obj, func, ctx) {
 
-    var keys = Object.keys(obj) || [];
+    var keys = obj ? Object.keys(obj) : [];
 
     keys.forEach(function (name, i) {
-      func(name, obj[name], i);
+      func.call(ctx, name, obj[name], i);
     });
+
+  },
+
+  extend: function (obj, src) {
+
+    this.eachIn(src, function (name, value) {
+
+      var type = this.typeOf(value);
+
+      switch (type) {
+        case 'object':
+          obj[name] = obj[name] || {};
+          this.extend(obj[name] || {}, value);
+          break;
+        case 'boolean':
+          obj[name] = obj[name] && value;
+          break;
+        default:
+          obj[name] = value;
+          break;
+      }
+
+      return obj;
+
+    }, this);
 
   },
 
@@ -186,42 +224,37 @@ var validator = {
 
 };
 
-var validate = function (rules, $) {
+var validate = function (rules, value) {
 
-  var result = { isValid: true, error: {} };
-  $ = _.pick($, Object.keys(rules));
+  var result = { isValid: true };
   
-  _.eachIn(rules, function (property, rule) {
+  if (rules[0] === 'required' || validator.required(value)) {
 
-    if (rule[0] === 'required' || validator.required($[property])) {
+    _.every(rules, function(signature) {
 
-      _.every(rule, function(signature) {
+      var method, args = [];
 
-        var method, args = [];
+      if (typeof signature !== 'string') {
+        method = signature[0];
+        args = signature.slice(1);
+      } else {
+        method = signature;
+      }
+      
+      args.unshift(value);
+      
+      if (!validator[method].apply(null, args)) {
+        result.isValid = false;
+        result.error = method;
+        return false;
+      }
+      return true;
 
-        if (typeof signature !== 'string') {
-          method = signature[0];
-          args = signature.slice(1);
-        } else {
-          method = signature;
-        }
-        
-        args.unshift($[property]);
-        
-        if (!validator[method].apply(null, args)) {
-          result.isValid = false;
-          result.error[property] = method;
-          return false;
-        }
-        return true;
+    });
 
-      });
+  }
 
-    }
-
-  });
-
-  result.$ = $;
+  result.$ = value;
   return result;
 
 };
