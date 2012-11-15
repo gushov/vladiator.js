@@ -10,11 +10,14 @@
   "engines": {
     "node": "~0.6.18"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lil_": ">= 0.0.x"
+  },
   "devDependencies": {
     "grunt": ">= 0.3.x",
     "buster": ">= 0.6.x",
-    "grunt-buster": ">= 0.1.x"
+    "grunt-buster": ">= 0.1.x",
+    "grunt-mlddlr": ">= 0.1.x"
   },
   "optionalDependencies": {
     "lilprovider": ">= 0.0.x"
