@@ -1,4 +1,4 @@
-/*! vladiator - v0.0.0 - 2012-11-11
+/*! vladiator - v0.0.1 - 2012-11-19
  * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -123,6 +123,18 @@ module.exports = {
 
   },
 
+  mapIn: function (obj, func, ctx) {
+
+    var result = {};
+
+    this.eachIn(obj, function (name, obj, i) {
+      result[name] = func.call(this, name, obj, i);
+    }, ctx);
+
+    return result;
+
+  },
+
   extend: function (obj, src) {
 
     this.eachIn(src, function (name, value) {
@@ -161,9 +173,10 @@ module.exports = {
   pick: function(obj, keys) {
 
     var picked = {};
+    keys = this.typeOf(keys) === 'array' ? keys : Object.keys(keys);
 
     this.each(keys, function (key) {
-      picked[key] = obj[key];
+      picked[key] = obj && obj[key];
     });
 
     return picked;
@@ -218,8 +231,8 @@ var validator = {
 
   },
 
-  gte: function (name, value, min) {
-    return value < min;
+  gte: function (value, min) {
+    return value >= min;
   }
 
 };

@@ -17,11 +17,20 @@ __Example__
 
 ```javascript
 var vladiator = require('vladiator');
-var rules = [ 'required', [ 'length', 10 ]];
+var rules = [ 'required', 'string', [ 'length', 10 ]];
 
 //returns { isValid: false, error: 'length' }
 vladiator.validate(rules, "keesmann");
 ```
+
+## Validators
+
+* required
+* array
+* number
+* string
+* length
+* gte
 
 ## License
 Copyright (c) 2012 August Hovland
