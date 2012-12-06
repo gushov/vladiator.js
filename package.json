@@ -2,13 +2,13 @@
   "author": "August Hovland <gushov@gmail.com>",
   "name": "vladiator",
   "description": "A simple vladation framework",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/gushov/vladiator.git"
   },
   "engines": {
-    "node": "~0.6.18"
+    "node": ">= 0.8.x"
   },
   "dependencies": {
     "lil_": ">= 0.0.x"

@@ -1,4 +1,4 @@
-/*! vladiator - v0.0.1 - 2012-11-19
+/*! vladiator - v0.0.1 - 2012-12-07
  * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
@@ -135,38 +135,73 @@ module.exports = {
 
   },
 
-  extend: function (obj, src) {
+  walk: function (target, source, func, fill) {
 
-    this.eachIn(src, function (name, value) {
+    var self = this;
 
-      var type = this.typeOf(value);
+    var walkObj = function (target, source) {
 
-      switch (type) {
-        case 'object':
-          obj[name] = obj[name] || {};
-          this.extend(obj[name] || {}, value);
-          break;
-        case 'boolean':
-          obj[name] = obj[name] && value;
-          break;
-        default:
-          obj[name] = value;
-          break;
+      self.eachIn(source, function (name, obj) {
+        step(target[name], obj, name, target);
+      });
+
+    };
+
+    var step = function (target, source, name, parent) {
+
+      var type = self.typeOf(source);
+
+      if (type === 'object') {
+
+        if (!target && parent && fill) {
+          target = parent[name] = {};
+        }
+        
+        walkObj(target, source);
+
+      } else {
+        func.call(parent, target, source, name);
       }
 
-      return obj;
+    };
 
-    }, this);
+    step(target, source);
+
+  },
+
+  extend: function (obj, src) {
+
+    this.walk(obj, src, function (target, src, name) {
+      this[name] = src;
+    }, true);
+
+    return obj;
 
   },
 
   defaults: function (obj, defaults) {
 
-    this.eachIn(defaults, function (name, value) {
-      if (!obj[name]) { obj[name] = value; }
-    });
+    this.walk(obj, defaults, function (target, src, name) {
+
+      if (!target) {
+        this[name] = src;
+      }
+
+    }, true);
 
     return obj;
+
+  },
+
+  match: function (obj, test) {
+
+    var isMatch = true;
+
+    this.walk(obj, test, function (target, src) {
+      isMatch = (target === src);
+    });
+
+    return isMatch;
 
   },
 
@@ -221,6 +256,10 @@ var validator = {
 
   string: function (value) {
     return typeof value === 'string';
+  },
+
+  boolean: function (value) {
+    return typeof value === 'boolean';
   },
 
   length: function (value, min, max) {

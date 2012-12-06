@@ -29,6 +29,7 @@ vladiator.validate(rules, "keesmann");
 * array
 * number
 * string
+* boolean
 * length
 * gte
 
