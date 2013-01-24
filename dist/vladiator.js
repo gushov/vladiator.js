@@ -1,5 +1,5 @@
-/*! vladiator - v0.0.1 - 2012-12-07
- * Copyright (c) 2012 August Hovland <gushov@gmail.com>; Licensed MIT */
+/*! vladiator - v0.0.2 - 2013-01-24
+ * Copyright (c) 2013 August Hovland <gushov@gmail.com>; Licensed MIT */
 
 (function (ctx) {
 
@@ -87,109 +87,175 @@ module.exports = {
 
   },
 
-  each: function (arr, func, ctx) {
+  each: function (thing, func, ctx) {
 
-    if (arr && arr.length) {
-      arr.forEach(func, ctx);
+    var type = this.typeOf(thing);
+    var keys;
+
+    if (type === 'array' && thing.length) {
+
+      thing.forEach(func, ctx);
+
+    } else if (type === 'object') {
+
+      keys = thing ? Object.keys(thing) : [];
+
+      keys.forEach(function (name, i) {
+        func.call(ctx, name, thing[name], i);
+      });
+
     }
 
   },
 
-  every: function (arr, func, ctx) {
+  every: function (thing, func, ctx) {
 
-    if (arr && arr.length) {
-      return arr.every(func, ctx);
+    var type = this.typeOf(thing);
+    var keys;
+
+    if (type === 'array' && thing.length) {
+
+      return thing.every(func, ctx);
+
+    } else if (type === 'object') {
+
+      keys = thing ? Object.keys(thing) : [];
+
+      return keys.every(function (name, i) {
+        return func.call(ctx, name, thing[name], i);
+      });
+
     }
+
     return false;
 
   },
 
-  map: function (arr, func, ctx) {
+  some: function (thing, func, ctx) {
 
-    if (arr && arr.length) {
-      return arr.map(func, ctx);
+    var type = this.typeOf(thing);
+    var keys;
+
+    if (type === 'array' && thing.length) {
+
+      return thing.some(func, ctx);
+
+    } else if (type === 'object') {
+
+      keys = thing ? Object.keys(thing) : [];
+
+      return keys.some(function (name, i) {
+        return func.call(ctx, name, thing[name], i);
+      });
+
     }
-    return [];
+
+    return false;
 
   },
 
-  eachIn: function (obj, func, ctx) {
+  map: function (thing, func, ctx) {
 
-    var keys = obj ? Object.keys(obj) : [];
+    var type = this.typeOf(thing);
+    var result = [];
 
-    keys.forEach(function (name, i) {
-      func.call(ctx, name, obj[name], i);
+    if (type === 'array' && thing.length) {
+
+      return thing.map(func, ctx);
+
+    } else if (type === 'object') {
+
+      result = {};
+
+      this.each(thing, function (name, obj, i) {
+        result[name] = func.call(this, name, obj, i);
+      }, ctx);
+
+    }
+
+    return result;
+
+  },
+
+  withOut: function (arr, value) {
+
+    var result = [];
+
+    this.each(arr, function (element) {
+
+      if (element !== value) {
+        result.push(element);
+      }
+
     });
-
-  },
-
-  mapIn: function (obj, func, ctx) {
-
-    var result = {};
-
-    this.eachIn(obj, function (name, obj, i) {
-      result[name] = func.call(this, name, obj, i);
-    }, ctx);
 
     return result;
 
   },
 
   walk: function (target, source, func, fill) {
-
+ 
     var self = this;
-
+ 
     var walkObj = function (target, source) {
-
-      self.eachIn(source, function (name, obj) {
+ 
+      self.each(source, function (name, obj) {
         step(target[name], obj, name, target);
       });
-
+ 
     };
-
+ 
     var step = function (target, source, name, parent) {
-
+ 
       var type = self.typeOf(source);
-
+ 
       if (type === 'object') {
-
+ 
         if (!target && parent && fill) {
           target = parent[name] = {};
         }
         
         walkObj(target, source);
-
+ 
       } else {
         func.call(parent, target, source, name);
       }
-
+ 
     };
-
+ 
     step(target, source);
+ 
+  },
+
+  extend: function () {
+
+    var args = Array.prototype.slice.call(arguments);
+    var target = args.shift();
+
+    this.each(args, function (src) {
+
+      this.each(src, function (name, value) {
+        target[name] = value;
+      });
+
+    }, this);
+
+    return target;
 
   },
 
-  extend: function (obj, src) {
+  defaults: function (target, defaults) {
 
-    this.walk(obj, src, function (target, src, name) {
-      this[name] = src;
-    }, true);
+    this.each(defaults, function (name, value) {
 
-    return obj;
-
-  },
-
-  defaults: function (obj, defaults) {
-
-    this.walk(obj, defaults, function (target, src, name) {
-
-      if (!target) {
-        this[name] = src;
+      var type = this.typeOf(target[name]);
+      if (type === 'undefined' || type === 'null') {
+        target[name] = value;
       }
 
-    }, true);
+    }, this);
 
-    return obj;
+    return target;
 
   },
 
@@ -215,16 +281,6 @@ module.exports = {
     });
 
     return picked;
-
-  },
-
-  pushOn: function (obj, prop, value) {
-
-    if (obj[prop] && typeof obj[prop].push === 'function') {
-      obj[prop].push(value);
-    } else if ( typeof obj[prop] === 'undefined' ) {
-      obj[prop] = [value];
-    }
 
   }
 
